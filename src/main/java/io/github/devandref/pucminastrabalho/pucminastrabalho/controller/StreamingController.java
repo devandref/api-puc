@@ -1,94 +1,25 @@
 package io.github.devandref.pucminastrabalho.pucminastrabalho.controller;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import io.github.devandref.pucminastrabalho.pucminastrabalho.dto.Message;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.function.Supplier;
-import java.util.stream.Stream;
 
 @RestController
 public class StreamingController {
 
-    @GetMapping(value = "/api/Fib/streaming")
-    public Stream<Long> streamFibonacci() {
-        Supplier<Long> fibonacciSupplier = new Supplier<Long>() {
-            long previous = 0;
-            long current = 1;
-
-            @Override
-            public Long get() {
-                long next = previous + current;
-                previous = current;
-                current = next;
-                return previous;
-            }
-        };
-
-        return Stream.generate(fibonacciSupplier)
-                .map(n -> {
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    return n;
-                });
+    @MessageMapping("/chat/sendMessage")
+    @SendTo("/topic/public") // Envia a mensagem para todos os clientes inscritos no tópico "/topic/public"
+    public Message sendMessage(Message message) {
+        return message;
     }
 
-    @GetMapping(value = "/api/Fib/{id}")
-    public Stream<Long> fibByID(@PathVariable String id) {
-        Supplier<Long> fibonacciSupplier = new Supplier<Long>() {
-            long previous = 0;
-            long current = 1;
-
-            @Override
-            public Long get() {
-                long next = previous + current;
-                previous = current;
-                current = next;
-                return previous;
-            }
-        };
-
-        return Stream.generate(fibonacciSupplier)
-                .map(n -> {
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    return n;
-                }).limit(Integer.valueOf(id));
+    @MessageMapping("/chat/addUser")
+    @SendTo("/topic/public") // Envia a mensagem para todos os clientes inscritos no tópico "/topic/public"
+    public Message addUser(Message message) {
+        return message;
     }
-
-    @GetMapping(value = "/api/Fib")
-    public Stream<Long> fibLimit100() {
-        Supplier<Long> fibonacciSupplier = new Supplier<Long>() {
-            long previous = 0;
-            long current = 1;
-
-            @Override
-            public Long get() {
-                long next = previous + current;
-                previous = current;
-                current = next;
-                return previous;
-            }
-        };
-
-        return Stream.generate(fibonacciSupplier)
-                .map(n -> {
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    return n;
-                }).limit(100);
-    }
-
-
 
 
 }
